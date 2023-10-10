@@ -29,10 +29,13 @@ public class ServidorIndicesHilo extends Thread {
         ) {
             String action = in.readLine();
             if (action.equals("FIND_PEERS")) {
+                System.out.println("Se obtiene una peticion de encontrar peers");
                 List<String> availablePeers = ServidorDeIndices.consultarPeers();
                 NodosCercanos nodos = new NodosCercanos(availablePeers);
                 ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
                 objOut.writeObject(nodos);
+            }else{
+                ServidorDeIndices.registrarPeer(action);
             }
         } catch (IOException e) {
             e.printStackTrace();

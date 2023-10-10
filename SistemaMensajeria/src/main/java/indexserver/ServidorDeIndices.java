@@ -19,8 +19,7 @@ public class ServidorDeIndices {
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                registrarPeer(socket);
-                System.out.println("Ahora hay "+consultarPeers().size());
+                System.out.println(consultarPeers().size());
                 new ServidorIndicesHilo(socket).start();
             }
         } catch (IOException e) {
@@ -29,8 +28,8 @@ public class ServidorDeIndices {
     }
 
     // Método para registrar un par en el servidor de índices
-    public static synchronized void registrarPeer(Socket peer) {
-        peersRegistrados.add(peer.getLocalSocketAddress().toString().substring(1));
+    public static synchronized void registrarPeer(String peer) {
+        peersRegistrados.add(peer);
     }
 
     // Método para buscar pares disponibles en el servidor de índices

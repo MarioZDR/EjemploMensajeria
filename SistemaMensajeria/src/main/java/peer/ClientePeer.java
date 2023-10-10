@@ -9,6 +9,8 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,7 +31,6 @@ public class ClientePeer implements Runnable {
     private List<Socket> peersCercanos;
 
     public ClientePeer(int serverPort) {
-        this.peersCercanos = new ArrayList<>();
         this.serverPort = serverPort;
     }
 
@@ -44,6 +45,7 @@ public class ClientePeer implements Runnable {
     }
 
     public void sendMessageBroadcast(String message) {
+        this.obtenerPeers();
         for (Socket peer : peersCercanos) {
             PrintWriter writer;
             try {
@@ -52,6 +54,15 @@ public class ClientePeer implements Runnable {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+    
+    public void registrarEnServidorIndices(){
+        try {
+            PrintWriter writer = new PrintWriter(socketIndexServer.getOutputStream(),true);
+            writer.println(this.serverAddress+":"+this.serverPort);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
     
@@ -70,6 +81,7 @@ public class ClientePeer implements Runnable {
     }
 
     public void conectarPeers(List<String> peersObtenidos) throws IOException{
+        this.peersCercanos = new ArrayList<>();
         for (String peersObtenido : peersObtenidos) {
             String [] direccion = peersObtenido.split(":");
             Socket socket = new Socket(direccion[0],Integer.parseInt(direccion[1]));
@@ -81,7 +93,6 @@ public class ClientePeer implements Runnable {
     public void run() {
         System.out.println("Corriendo peer");
         this.connectToServer();
-        this.obtenerPeers();
-        System.out.println("Hay "+this.peersCercanos.size());
+        this.registrarEnServidorIndices();
     }
 }
