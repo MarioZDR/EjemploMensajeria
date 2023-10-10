@@ -4,7 +4,6 @@
  */
 package peer;
 
-import indexserver.NodosCercanos;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -18,33 +17,33 @@ import java.util.logging.Logger;
  */
 public class ClientePeer implements Runnable {
 
-    private String serverAddress = "localhost";
-    private int serverPort;
-    
-    private PrintWriter out;
-    private BufferedReader in;
-    private ObjectInputStream objIn;
+    private String host = "localhost";
+    private int puerto;
 
-    private Socket socketIndexServer;
-    private final int portIndexServer = 3999;
-    
+    private DataInputStream entradaServidorIndices;
+    private PrintWriter salidaServidorIndices;
+    private Socket socketServidorIndices;
+    private final int puertoServidorIndices = 3999;
+
     private List<Socket> peersCercanos;
 
-    public ClientePeer(int serverPort) {
-        this.serverPort = serverPort;
+    public ClientePeer(int puerto) {
+        this.puerto = puerto;
     }
 
-    public void connectToServer() {
+    public void conectarServidorIndices() {
         try {
-            socketIndexServer = new Socket(serverAddress, portIndexServer);
-            in = new BufferedReader(new InputStreamReader(socketIndexServer.getInputStream()));
+            socketServidorIndices = new Socket(host, puertoServidorIndices);
+            entradaServidorIndices = new DataInputStream(this.socketServidorIndices.getInputStream());
+            salidaServidorIndices = new PrintWriter(socketServidorIndices.getOutputStream(), true);
+            salidaServidorIndices.println(this.host + ":" + this.puerto);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("No se pudo conectar");
+            System.out.println("No se pudo conectar al servidor de indices");
         }
     }
 
-    public void sendMessageBroadcast(String message) {
+    public void enviarDatosBroadcast(String message) {
         this.obtenerPeers();
         for (Socket peer : peersCercanos) {
             PrintWriter writer;
@@ -56,43 +55,36 @@ public class ClientePeer implements Runnable {
             }
         }
     }
-    
-    public void registrarEnServidorIndices(){
-        try {
-            PrintWriter writer = new PrintWriter(socketIndexServer.getOutputStream(),true);
-            writer.println(this.serverAddress+":"+this.serverPort);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-    
+
     public void obtenerPeers() {
         try {
-            out = new PrintWriter(socketIndexServer.getOutputStream(), true);
-            objIn = new ObjectInputStream(socketIndexServer.getInputStream());
-            
-            NodosCercanos nodosCercanos = (NodosCercanos)objIn.readObject();
-            List<String> peersObtenidos = nodosCercanos.getNodosCercanos();
-            
-            this.conectarPeers(peersObtenidos);
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            salidaServidorIndices.println("FIND_PEERS");
+            int numeroPeers = entradaServidorIndices.readInt();
+            List<String> direcciones = new ArrayList<>();
+            for (int i = 0; i < numeroPeers; i++) {
+                direcciones.add(entradaServidorIndices.readUTF());
+            }
+            this.conectarPeers(direcciones);
+        } catch (IOException ex) {
+            Logger.getLogger(ClientePeer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void conectarPeers(List<String> peersObtenidos) throws IOException{
+    public void conectarPeers(List<String> peersObtenidos) throws IOException {
         this.peersCercanos = new ArrayList<>();
         for (String peersObtenido : peersObtenidos) {
-            String [] direccion = peersObtenido.split(":");
-            Socket socket = new Socket(direccion[0],Integer.parseInt(direccion[1]));
-            peersCercanos.add(socket);
+            String[] direccion = peersObtenido.split(":");
+            String hostPeer = direccion[0];
+            int puertoPeer = Integer.parseInt(direccion[1]);
+            if (!(hostPeer.equalsIgnoreCase(this.host) && puertoPeer == this.puerto)) {
+                Socket socket = new Socket(hostPeer, puertoPeer);
+                peersCercanos.add(socket);
+            }
         }
     }
-    
+
     @Override
     public void run() {
-        System.out.println("Corriendo peer");
-        this.connectToServer();
-        this.registrarEnServidorIndices();
+        this.conectarServidorIndices();
     }
 }

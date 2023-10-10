@@ -6,10 +6,9 @@ package peer;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import mensajeria.Conexion;
+import conexion.Conexion;
 
 /**
  *
@@ -17,35 +16,34 @@ import mensajeria.Conexion;
  */
 public class ServidorPeer implements Runnable {
 
+    private final int PUERTO;
     private ServerSocket servidor;
     private BufferedReader lector;
-    private PrintWriter escritor;
 
     private Conexion suscriptor;
-    private final int PUERTO;
+    
 
-    public ServidorPeer(int PUERTO, Conexion suscriptor) {
+    public ServidorPeer(int PUERTO) {
         this.PUERTO = PUERTO;
-        this.suscriptor = suscriptor;
     }
 
     @Override
     public void run() {
         try {
             servidor = new ServerSocket(this.PUERTO);
-            System.out.println("Servidor escuchando en el puerto "+this.PUERTO);
             
             while (true) {
-                System.out.println("Esperando respuesta..");
                 Socket clienteSocket = servidor.accept();
-                System.out.println("Se conecto uno..");
                 lector = new BufferedReader(new InputStreamReader(clienteSocket.getInputStream()));
-                
                 String datosRecibidos = lector.readLine();
                 this.suscriptor.recibirDatos(datosRecibidos);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public void agregarSuscriptor(Conexion suscriptor){
+        this.suscriptor = suscriptor;
     }
 }

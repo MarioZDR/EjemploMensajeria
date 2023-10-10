@@ -19,7 +19,6 @@ public class ServidorDeIndices {
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println(consultarPeers().size());
                 new ServidorIndicesHilo(socket).start();
             }
         } catch (IOException e) {

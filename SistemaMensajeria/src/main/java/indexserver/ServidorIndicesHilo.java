@@ -4,7 +4,6 @@
  */
 package indexserver;
 
-
 import java.io.*;
 import java.net.*;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
  * @author mario
  */
 public class ServidorIndicesHilo extends Thread {
-    
+
     private Socket socket;
 
     public ServidorIndicesHilo(Socket socket) {
@@ -24,18 +23,21 @@ public class ServidorIndicesHilo extends Thread {
     @Override
     public void run() {
         try (
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
-        ) {
-            String action = in.readLine();
-            if (action.equals("FIND_PEERS")) {
-                System.out.println("Se obtiene una peticion de encontrar peers");
-                List<String> availablePeers = ServidorDeIndices.consultarPeers();
-                NodosCercanos nodos = new NodosCercanos(availablePeers);
-                ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
-                objOut.writeObject(nodos);
-            }else{
-                ServidorDeIndices.registrarPeer(action);
+                BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream())); 
+                DataOutputStream salida = new DataOutputStream(socket.getOutputStream());) {
+            while (true) {
+                String linea = entrada.readLine();
+                if (linea.equals("FIND_PEERS")) {
+                    List<String> peersDisponibles = ServidorDeIndices.consultarPeers();
+
+                    salida.writeInt(peersDisponibles.size());
+
+                    for (String direccionPeer : peersDisponibles) {
+                        salida.writeUTF(direccionPeer);
+                    }
+                } else {
+                    ServidorDeIndices.registrarPeer(linea);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

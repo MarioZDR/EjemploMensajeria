@@ -1,5 +1,7 @@
 package mensajeria;
 
+import conexion.Conexion;
+import empaquetamiento.Movimiento;
 import java.util.Scanner;
 
 public class Mensajeria implements Runnable {
@@ -7,21 +9,24 @@ public class Mensajeria implements Runnable {
     private Conexion conexion;
     private String usuario;
     private boolean activo = true;
+    private final Scanner tec = new Scanner(System.in);
 
     public Mensajeria() {
         this.conexion = new Conexion();
+        this.conexion.agregarSuscriptor(this);
     }
 
     @Override
     public void run() {
-        Scanner tec = new Scanner(System.in);
-
-        System.out.println("Ingrese su nombre: ");
-        this.usuario = tec.nextLine();
-
+        this.solicitarNombre();
+        this.anunciarEntradaChat();
+        this.chatear();
+    }
+    
+    private void chatear(){
         String mensaje;
+        System.out.println("Empieza a chatear, cuando quieras salir escribe 'Salir'");
         do {
-            System.out.println("Escribe un mensaje (o 'salir' para salir):");
             mensaje = tec.nextLine();
             try {
                 if (!mensaje.equalsIgnoreCase("Salir")) {
@@ -35,9 +40,23 @@ public class Mensajeria implements Runnable {
             }
         } while (activo);
     }
+    
+    private void solicitarNombre(){
+        System.out.println("Ingrese su nombre: ");
+        this.usuario = tec.nextLine();
+    }
 
+    private void anunciarEntradaChat(){
+        try {
+            conexion.enviarDatos(new Movimiento("se ha conectado", this.usuario));
+        } catch (Exception ex) {
+            System.out.println("Error al avisar a los demas de la entrada al chat");
+            ex.printStackTrace();
+        }
+    }
+    
     public void recibirMensaje(Movimiento movimiento) {
-        System.out.println("Mensaje recibido de: " + movimiento);
+        System.out.println(movimiento);
     }
 
     public static void main(String[] args) {

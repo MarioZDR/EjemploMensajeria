@@ -8,19 +8,16 @@ package peer;
  *
  * @author mario
  */
-
-import mensajeria.Conexion;
-
 public class Peer {
 
     private final int PUERTO;
     private ClientePeer ladoCliente;
     private ServidorPeer ladoServidor;
 
-    public Peer(int PUERTO, Conexion suscriptor) {
+    public Peer(int PUERTO) {
         this.PUERTO = PUERTO;
         ladoCliente = new ClientePeer(PUERTO);
-        ladoServidor = new ServidorPeer(PUERTO, suscriptor);
+        ladoServidor = new ServidorPeer(PUERTO);
     }
 
     public void iniciar() {

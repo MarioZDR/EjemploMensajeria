@@ -2,10 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package mensajeria;
+package conexion;
 
+import empaquetamiento.Movimiento;
 import peer.Peer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import mensajeria.Mensajeria;
 
 /**
  *
@@ -16,16 +18,21 @@ public class Conexion {
     private Mensajeria suscriptor;
     
     private Peer peer;
-    private final int PUERTO = 4001; // 4000 4001 4002 4003 4004
+    private final int PUERTO = 4002; // 4000 4001 4002 4003 4004
 
     public Conexion() {
-        this.peer = new Peer(PUERTO, this);
+        this.peer = new Peer(PUERTO);
+        this.peer.getLadoServidor().agregarSuscriptor(this);
         this.peer.iniciar();
+    }
+    
+    public void agregarSuscriptor(Mensajeria suscriptor){
+        this.suscriptor = suscriptor;
     }
     
     public void enviarDatos(Movimiento movimiento) throws Exception{
         String json = movimiento.convertirAJSON();
-        peer.getLadoCliente().sendMessageBroadcast(json);
+        peer.getLadoCliente().enviarDatosBroadcast(json);
     }
     
     public void recibirDatos(String json) throws Exception{

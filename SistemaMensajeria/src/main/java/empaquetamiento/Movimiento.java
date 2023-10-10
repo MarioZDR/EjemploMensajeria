@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package mensajeria;
+package empaquetamiento;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,7 +41,7 @@ public class Movimiento{
 
     @Override
     public String toString() {
-        return "Movimiento("+ persona + ":" + mensaje + ')';
+        return persona + ": " + mensaje;
     }
     
     public String convertirAJSON() throws Exception {
