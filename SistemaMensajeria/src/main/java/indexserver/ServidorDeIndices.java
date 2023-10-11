@@ -19,21 +19,26 @@ public class ServidorDeIndices {
 
             while (true) {
                 Socket socket = serverSocket.accept();
+                System.out.println("Entro un peer a la red");
                 new ServidorIndicesHilo(socket).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error al levantar el servidor de indices");
         }
     }
-
+    
     // Método para registrar un par en el servidor de índices
-    public static synchronized void registrarPeer(String peer) {
+    public static void registrarPeer(String peer) {
         peersRegistrados.add(peer);
     }
 
     // Método para buscar pares disponibles en el servidor de índices
-    public static synchronized List<String> consultarPeers() {
+    public static List<String> consultarPeers() {
         return (peersRegistrados);
+    }
+    
+    public static void borrarRegistroPeer(String peer){
+        peersRegistrados.remove(peer);
     }
 }
 

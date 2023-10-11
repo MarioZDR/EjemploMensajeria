@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import conexion.Conexion;
+import java.io.IOException;
 
 /**
  *
@@ -39,7 +40,15 @@ public class ServidorPeer implements Runnable {
                 this.suscriptor.recibirDatos(datosRecibidos);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Conexion finalizada");
+        }
+    }
+    
+    public void cerrarServidor(){
+        try{
+            this.servidor.close();
+        }catch(IOException ex){
+            System.out.println("No se pudo cerrar el servidor del peer");
         }
     }
     

@@ -5,7 +5,7 @@
 package peer;
 
 import conexion.Conexion;
-import java.io.IOException;
+import excepciones.ConexionException;
 
 /**
  *
@@ -16,28 +16,37 @@ public class Peer {
     private final int PUERTO;
     private ClientePeer ladoCliente;
     private ServidorPeer ladoServidor;
+    
+    private Thread hiloLadoCliente, hiloLadoServer;
 
     public Peer(int PUERTO) {
         this.PUERTO = PUERTO;
         ladoCliente = new ClientePeer(PUERTO);
         ladoServidor = new ServidorPeer(PUERTO);
+        this.ladoCliente.conectarServidorIndices();
     }
 
     public void iniciar() {
-       Thread hiloLadoCliente = new Thread(ladoCliente);
-       Thread hiloLadoServer = new Thread(ladoServidor);
-       hiloLadoCliente.start();
-       hiloLadoServer.start();
+        hiloLadoCliente = new Thread(ladoCliente);
+        hiloLadoServer = new Thread(ladoServidor);
+        hiloLadoCliente.start();
+        hiloLadoServer.start();
+    }
+    
+    public void desconectar(){
+        this.ladoCliente.cerrarConexiones();
+        this.ladoServidor.cerrarServidor();
+        this.ladoCliente.cerrarConexionServidorIndices();
     }
 
-    public void enviarDatos(String datos) throws IOException{
-        this.ladoCliente.enviarDatos(datos);
+    public void enviarDatos(String datos) throws ConexionException {
+         this.ladoCliente.enviarDatos(datos);
     }
-    
-    public void agregarSuscriptor(Conexion conexion){
+
+    public void agregarSuscriptor(Conexion conexion) {
         this.ladoServidor.agregarSuscriptor(conexion);
     }
-    
+
     public int getPUERTO() {
         return PUERTO;
     }

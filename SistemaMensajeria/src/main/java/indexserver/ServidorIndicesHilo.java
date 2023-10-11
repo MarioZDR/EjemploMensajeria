@@ -15,6 +15,7 @@ import java.util.List;
 public class ServidorIndicesHilo extends Thread {
 
     private Socket socket;
+    private String direccion;
 
     public ServidorIndicesHilo(Socket socket) {
         this.socket = socket;
@@ -27,6 +28,10 @@ public class ServidorIndicesHilo extends Thread {
                 DataOutputStream salida = new DataOutputStream(socket.getOutputStream());) {
             while (true) {
                 String linea = entrada.readLine();
+                if(linea==null){
+                    this.borrarPeer();
+                    break;
+                }
                 if (linea.equals("FIND_PEERS")) {
                     List<String> peersDisponibles = ServidorDeIndices.consultarPeers();
 
@@ -36,11 +41,25 @@ public class ServidorIndicesHilo extends Thread {
                         salida.writeUTF(direccionPeer);
                     }
                 } else {
+                    this.direccion = linea;
                     ServidorDeIndices.registrarPeer(linea);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            this.borrarPeer();
+        }
+    }
+    
+    private void borrarPeer(){
+        ServidorDeIndices.borrarRegistroPeer(this.direccion);
+        System.out.println("Un peer salio de la red");
+    }
+    
+    public void cerrarServidor(){
+        try{
+            this.socket.close();
+        }catch(IOException ex){
+            System.out.println("No se pudo cerrar el servidor del peer");
         }
     }
 }

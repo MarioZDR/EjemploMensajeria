@@ -2,9 +2,10 @@ package mensajeria;
 
 import conexion.Conexion;
 import empaquetamiento.Movimiento;
+import excepciones.ConexionException;
 import java.util.Scanner;
 
-public class Mensajeria implements Runnable {
+public class Mensajeria extends Thread {
 
     private Conexion conexion;
     private String usuario;
@@ -33,10 +34,12 @@ public class Mensajeria implements Runnable {
                     conexion.enviarDatos(new Movimiento(mensaje, this.usuario));
                 } else {
                     activo = false;
+                    // metodo del salirDelChat() de samuel
+                    conexion.cerrarConexiones();
+                    break;
                 }
-            } catch (Exception ex) {
-                System.out.println("Ocurrio un error en el envio del mensaje");
-                ex.printStackTrace();
+            } catch (ConexionException ex) {
+                System.out.println(ex.getMessage());
             }
         } while (activo);
     }
@@ -49,11 +52,14 @@ public class Mensajeria implements Runnable {
     private void anunciarEntradaChat(){
         try {
             conexion.enviarDatos(new Movimiento("se ha conectado", this.usuario));
-        } catch (Exception ex) {
+        } catch (ConexionException ex) {
             System.out.println("Error al avisar a los demas de la entrada al chat");
-            ex.printStackTrace();
         }
     }
+    
+    //metodo de samuel anunciarSalidaChat
+    
+    //metodo de salirDelChat que tiene el anunciarSalida el cerrarConexiones y el System.exit
     
     public void recibirMensaje(Movimiento movimiento) {
         System.out.println(movimiento);
