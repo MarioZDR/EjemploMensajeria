@@ -42,7 +42,6 @@ public class ClientePeer implements Runnable {
     }
 
     private void registrarPeerIndexServer() {
-        salidaServidorIndices.println("CONNECT");
         salidaServidorIndices.println(this.host + ":" + this.puerto);
     }
 

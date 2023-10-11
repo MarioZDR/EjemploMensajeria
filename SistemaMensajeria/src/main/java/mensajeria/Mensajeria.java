@@ -66,10 +66,7 @@ public class Mensajeria extends Thread {
     
     private void salirDelChat() {
         anunciarSalidaChat();
-        
         conexion.cerrarConexiones();
-        
-        System.exit(0);
     }
     
     public void recibirMensaje(Movimiento movimiento) {

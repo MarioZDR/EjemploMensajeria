@@ -19,7 +19,6 @@ public class ServidorDeIndices {
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("Entro un peer a la red");
                 new ServidorIndicesHilo(socket).start();
             }
         } catch (IOException e) {
@@ -29,6 +28,7 @@ public class ServidorDeIndices {
     
     // Método para registrar un par en el servidor de índices
     public static void registrarPeer(String peer) {
+        System.out.println("Entro un peer a la red");
         peersRegistrados.add(peer);
     }
 
@@ -38,6 +38,7 @@ public class ServidorDeIndices {
     }
     
     public static void borrarRegistroPeer(String peer){
+        System.out.println("Un peer salio de la red");
         peersRegistrados.remove(peer);
     }
 }

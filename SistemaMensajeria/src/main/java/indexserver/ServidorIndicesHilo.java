@@ -40,9 +40,9 @@ public class ServidorIndicesHilo extends Thread {
                     for (String direccionPeer : peersDisponibles) {
                         salida.writeUTF(direccionPeer);
                     }
-                } else if(linea.equals("CONNECT")){
-                    this.direccion = linea;
+                } else{
                     ServidorDeIndices.registrarPeer(linea);
+                    this.direccion = linea;
                 }
             }
         } catch (IOException e) {
@@ -52,7 +52,6 @@ public class ServidorIndicesHilo extends Thread {
     
     private void borrarPeer(){
         ServidorDeIndices.borrarRegistroPeer(this.direccion);
-        System.out.println("Un peer salio de la red");
     }
     
     public void cerrarServidor(){
