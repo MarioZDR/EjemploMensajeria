@@ -34,8 +34,7 @@ public class Mensajeria extends Thread {
                     conexion.enviarDatos(new Movimiento(mensaje, this.usuario));
                 } else {
                     activo = false;
-                    // metodo del salirDelChat() de samuel
-                    conexion.cerrarConexiones();
+                    salirDelChat();
                     break;
                 }
             } catch (ConexionException ex) {
@@ -57,9 +56,21 @@ public class Mensajeria extends Thread {
         }
     }
     
-    //metodo de samuel anunciarSalidaChat
+    private void anunciarSalidaChat() {
+        try {
+            conexion.enviarDatos(new Movimiento("se ha salido", this.usuario));
+        } catch (ConexionException ex) {
+            System.out.println("Error al avisar a los demas de la salida del chat");
+        }
+    }
     
-    //metodo de salirDelChat que tiene el anunciarSalida el cerrarConexiones y el System.exit
+    private void salirDelChat() {
+        anunciarSalidaChat();
+        
+        conexion.cerrarConexiones();
+        
+        System.exit(0);
+    }
     
     public void recibirMensaje(Movimiento movimiento) {
         System.out.println(movimiento);
