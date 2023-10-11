@@ -4,6 +4,9 @@
  */
 package peer;
 
+import conexion.Conexion;
+import java.io.IOException;
+
 /**
  *
  * @author mario
@@ -27,6 +30,14 @@ public class Peer {
        hiloLadoServer.start();
     }
 
+    public void enviarDatos(String datos) throws IOException{
+        this.ladoCliente.enviarDatos(datos);
+    }
+    
+    public void agregarSuscriptor(Conexion conexion){
+        this.ladoServidor.agregarSuscriptor(conexion);
+    }
+    
     public int getPUERTO() {
         return PUERTO;
     }

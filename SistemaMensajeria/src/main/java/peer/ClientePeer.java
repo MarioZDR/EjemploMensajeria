@@ -43,20 +43,25 @@ public class ClientePeer implements Runnable {
         }
     }
 
-    public void enviarDatosBroadcast(String message) {
-        this.obtenerPeers();
+    public void enviarDatosBroadcast(String datos) {
         for (Socket peer : peersCercanos) {
             PrintWriter writer;
             try {
                 writer = new PrintWriter(peer.getOutputStream(), true);
-                writer.println(message);
+                writer.println(datos);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
     }
 
-    public void obtenerPeers() {
+    public void enviarDatos(String datos) throws IOException{
+        List<String> direcciones = this.obtenerPeers();
+        this.conectarPeers(direcciones);
+        this.enviarDatosBroadcast(datos);
+    }
+    
+    public List<String> obtenerPeers() {
         try {
             salidaServidorIndices.println("FIND_PEERS");
             int numeroPeers = entradaServidorIndices.readInt();
@@ -64,9 +69,10 @@ public class ClientePeer implements Runnable {
             for (int i = 0; i < numeroPeers; i++) {
                 direcciones.add(entradaServidorIndices.readUTF());
             }
-            this.conectarPeers(direcciones);
+            return direcciones;
         } catch (IOException ex) {
-            Logger.getLogger(ClientePeer.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            return null;
         }
     }
 

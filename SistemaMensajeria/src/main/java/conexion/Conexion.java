@@ -22,7 +22,7 @@ public class Conexion {
 
     public Conexion() {
         this.peer = new Peer(PUERTO);
-        this.peer.getLadoServidor().agregarSuscriptor(this);
+        this.peer.agregarSuscriptor(this);
         this.peer.iniciar();
     }
     
@@ -32,7 +32,7 @@ public class Conexion {
     
     public void enviarDatos(Movimiento movimiento) throws Exception{
         String json = movimiento.convertirAJSON();
-        peer.getLadoCliente().enviarDatosBroadcast(json);
+        peer.enviarDatos(json);
     }
     
     public void recibirDatos(String json) throws Exception{
