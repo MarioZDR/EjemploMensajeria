@@ -40,7 +40,7 @@ public class ServidorIndicesHilo extends Thread {
                     for (String direccionPeer : peersDisponibles) {
                         salida.writeUTF(direccionPeer);
                     }
-                } else {
+                } else if(linea.equals("CONNECT")){
                     this.direccion = linea;
                     ServidorDeIndices.registrarPeer(linea);
                 }

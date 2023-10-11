@@ -30,15 +30,20 @@ public class ClientePeer implements Runnable {
         this.puerto = puerto;
     }
 
-    public void conectarServidorIndices(){
+    public void conectarServidorIndices() {
         try {
             socketServidorIndices = new Socket(host, puertoServidorIndices);
             entradaServidorIndices = new DataInputStream(this.socketServidorIndices.getInputStream());
             salidaServidorIndices = new PrintWriter(socketServidorIndices.getOutputStream(), true);
-            salidaServidorIndices.println(this.host + ":" + this.puerto);
+            registrarPeerIndexServer();
         } catch (Exception e) {
             System.out.println("No se pudo conectar al servidor de indices");
         }
+    }
+
+    private void registrarPeerIndexServer() {
+        salidaServidorIndices.println("CONNECT");
+        salidaServidorIndices.println(this.host + ":" + this.puerto);
     }
 
     public void enviarDatosBroadcast(String datos) throws ConexionException {
@@ -76,27 +81,27 @@ public class ClientePeer implements Runnable {
             throw new ConexionException("No se pudo conectar con los otros usuarios");
         }
     }
-    
-    public void cerrarConexionServidorIndices(){
-        try{
+
+    public void cerrarConexionServidorIndices() {
+        try {
             socketServidorIndices.close();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             System.out.println("No se pudo cerrar la conexion con el servidor de indices");
         }
     }
 
-    public void cerrarConexiones(){
-        try{
+    public void cerrarConexiones() {
+        try {
             for (Socket peersCercano : peersCercanos) {
-                if(peersCercano!=null&&!peersCercano.isClosed()){
+                if (peersCercano != null && !peersCercano.isClosed()) {
                     peersCercano.close();
                 }
             }
-        }catch(IOException ex){
+        } catch (IOException ex) {
             System.out.println("No se pudo cerrar la conexion con los otros peers");
         }
     }
-    
+
     public void conectarPeers(List<String> peersObtenidos) throws ConexionException {
         this.peersCercanos = new ArrayList<>();
         for (String peersObtenido : peersObtenidos) {
@@ -117,6 +122,6 @@ public class ClientePeer implements Runnable {
 
     @Override
     public void run() {
-        
+
     }
 }
