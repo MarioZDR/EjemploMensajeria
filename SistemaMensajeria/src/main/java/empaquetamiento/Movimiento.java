@@ -7,8 +7,8 @@ package empaquetamiento;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- *
- * @author mario
+ * Movimiento.class
+ * @author
  */
 public class Movimiento{
     

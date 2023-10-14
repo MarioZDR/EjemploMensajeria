@@ -8,8 +8,8 @@ import conexion.Conexion;
 import excepciones.ConexionException;
 
 /**
- *
- * @author mario
+ * Peer.class
+ * @author
  */
 public class Peer {
 
@@ -23,7 +23,6 @@ public class Peer {
         this.PUERTO = PUERTO;
         ladoCliente = new ClientePeer(PUERTO);
         ladoServidor = new ServidorPeer(PUERTO);
-        this.ladoCliente.conectarServidorIndices();
     }
 
     public void iniciar() {

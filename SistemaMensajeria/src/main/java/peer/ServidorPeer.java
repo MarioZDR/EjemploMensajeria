@@ -12,15 +12,14 @@ import conexion.Conexion;
 import java.io.IOException;
 
 /**
- *
- * @author mario
+ * ServidorPeer.class
+ * @author
  */
 public class ServidorPeer implements Runnable {
 
     private final int PUERTO;
     private ServerSocket servidor;
-    private BufferedReader lector;
-
+    
     private Conexion suscriptor;
     
 
@@ -35,11 +34,10 @@ public class ServidorPeer implements Runnable {
             
             while (true) {
                 Socket clienteSocket = servidor.accept();
-                lector = new BufferedReader(new InputStreamReader(clienteSocket.getInputStream()));
-                String datosRecibidos = lector.readLine();
-                this.suscriptor.recibirDatos(datosRecibidos);
+                new ServidorPeerHilo(clienteSocket, suscriptor).start();
             }
         } catch (Exception e) {
+            this.cerrarServidor();
             System.out.println("Conexion finalizada");
         }
     }
@@ -54,5 +52,39 @@ public class ServidorPeer implements Runnable {
     
     public void agregarSuscriptor(Conexion suscriptor){
         this.suscriptor = suscriptor;
+    }
+    
+}
+
+class ServidorPeerHilo extends Thread {
+
+    private Socket socket;
+    private BufferedReader lector;
+    private Conexion suscriptor;
+
+    public ServidorPeerHilo(Socket socket, Conexion suscriptor) {
+        this.socket = socket;
+        this.suscriptor = suscriptor;
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                lector = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+                String datosRecibidos = lector.readLine();
+                this.suscriptor.recibirDatos(datosRecibidos);
+            }
+        } catch (IOException e) {
+            this.cerrarConexion();
+        } catch (Exception ex) {}
+    }
+    
+    public void cerrarConexion(){
+        try{
+            this.socket.close();
+        }catch(IOException ex){
+            System.out.println("No se pudo cerrar la conexion con el servidor del peer");
+        }
     }
 }

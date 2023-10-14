@@ -5,6 +5,10 @@ import empaquetamiento.Movimiento;
 import excepciones.ConexionException;
 import java.util.Scanner;
 
+/**
+ * Mensajeria.class
+ * @author
+ */
 public class Mensajeria extends Thread {
 
     private Conexion conexion;

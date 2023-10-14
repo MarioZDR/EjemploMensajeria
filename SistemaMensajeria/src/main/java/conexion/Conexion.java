@@ -11,15 +11,15 @@ import excepciones.ConexionException;
 import mensajeria.Mensajeria;
 
 /**
- *
- * @author mario
+ * Conexion.class
+ * @author 
  */
 public class Conexion {
     
     private Mensajeria suscriptor;
     
     private Peer peer;
-    private final int PUERTO = 4002; // 4000 4001 4002 4003 4004
+    private final int PUERTO = 4000; // 4000 4001 4002 4003 4004
 
     public Conexion() {
         this.peer = new Peer(PUERTO);

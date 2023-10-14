@@ -5,8 +5,8 @@
 package excepciones;
 
 /**
- *
- * @author mario
+ * ConexionException.class
+ * @author
  */
 public class ConexionException extends Exception{
 
