@@ -4,9 +4,8 @@
  */
 package conexion;
 
-import empaquetamiento.Movimiento;
 import peer.Peer;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import empaquetamiento.Evento;
 import excepciones.ConexionException;
 import mensajeria.Mensajeria;
 
@@ -19,7 +18,7 @@ public class Conexion {
     private Mensajeria suscriptor;
     
     private Peer peer;
-    private final int PUERTO = 4000; // 4000 4001 4002 4003 4004
+    private final int PUERTO = 4005; // 4000 4001 4002 4003 4004
 
     public Conexion() {
         this.peer = new Peer(PUERTO);
@@ -35,27 +34,16 @@ public class Conexion {
         this.suscriptor = suscriptor;
     }
     
-    public void enviarDatos(Movimiento movimiento) throws ConexionException {
+    public void enviarDatos(Evento datos) throws ConexionException {
         try {
-            String json = this.empaquetarDatos(movimiento);
-            peer.enviarDatos(json);
+            peer.enviarDatos(datos);
         } catch (ConexionException ex) {
             throw ex;
         }
     }
     
-    public String empaquetarDatos(Movimiento movimiento) throws ConexionException {
-        try {
-            return movimiento.convertirAJSON();
-        } catch (Exception ex) {
-            throw new ConexionException("Hubo un error al enviar el mensaje en el empaquetado de datos");
-        }
-    }
-    
-    public void recibirDatos(String json) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Movimiento movimiento = objectMapper.readValue(json, Movimiento.class);
-        suscriptor.recibirMensaje(movimiento);
+    public void recibirDatos(Evento datos) throws Exception {
+        suscriptor.recibirMensaje(datos);
     }
     
 }

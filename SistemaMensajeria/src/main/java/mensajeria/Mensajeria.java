@@ -1,7 +1,11 @@
 package mensajeria;
 
 import conexion.Conexion;
-import empaquetamiento.Movimiento;
+import empaquetamiento.Evento;
+import empaquetamiento.Mensaje;
+import empaquetamiento.MoverFicha;
+import empaquetamiento.SacarFichaPozo;
+import empaquetamiento.TipoEvento;
 import excepciones.ConexionException;
 import java.util.Scanner;
 
@@ -30,12 +34,22 @@ public class Mensajeria extends Thread {
     
     private void chatear(){
         String mensaje;
-        System.out.println("Empieza a chatear, cuando quieras salir escribe 'Salir'");
+        Evento evento = null;
+        System.out.println("Mover ficha ingresa 'Mover' seguido de la ficha");
+        System.out.println("Sacar ficha ingresa 'Pozo' seguido de la ficha");
+        System.out.println("Para salir ingresa 'Salir'");
         do {
             mensaje = tec.nextLine();
             try {
                 if (!mensaje.equalsIgnoreCase("Salir")) {
-                    conexion.enviarDatos(new Movimiento(mensaje, this.usuario));
+                    String ficha = tec.nextLine();
+                    if(mensaje.equalsIgnoreCase("Mover")){
+                        this.conexion.enviarDatos(new MoverFicha(this.usuario,ficha, TipoEvento.MOVER_FICHA));
+                    }else if(mensaje.equalsIgnoreCase("Pozo")){
+                        this.conexion.enviarDatos(new SacarFichaPozo(this.usuario,ficha, TipoEvento.SACAR_FICHA));
+                    }else{
+                        System.out.println("Ingresaste un movimiento invalido");
+                    }
                 } else {
                     activo = false;
                     salirDelChat();
@@ -51,10 +65,10 @@ public class Mensajeria extends Thread {
         System.out.println("Ingrese su nombre: ");
         this.usuario = tec.nextLine();
     }
-
+    
     private void anunciarEntradaChat(){
         try {
-            conexion.enviarDatos(new Movimiento("se ha conectado", this.usuario));
+            conexion.enviarDatos(new Mensaje(this.usuario,"se ha conectado", TipoEvento.MENSAJE));
         } catch (ConexionException ex) {
             System.out.println("Error al avisar a los demas de la entrada al chat");
         }
@@ -62,7 +76,7 @@ public class Mensajeria extends Thread {
     
     private void anunciarSalidaChat() {
         try {
-            conexion.enviarDatos(new Movimiento("se ha salido", this.usuario));
+            conexion.enviarDatos(new Mensaje( this.usuario, "ha salido",TipoEvento.MENSAJE));
         } catch (ConexionException ex) {
             System.out.println("Error al avisar a los demas de la salida del chat");
         }
@@ -73,8 +87,8 @@ public class Mensajeria extends Thread {
         conexion.cerrarConexiones();
     }
     
-    public void recibirMensaje(Movimiento movimiento) {
-        System.out.println(movimiento);
+    public void recibirMensaje(Evento datos) {
+        System.out.println(datos);
     }
 
     public static void main(String[] args) {

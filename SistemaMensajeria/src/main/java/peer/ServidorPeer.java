@@ -9,7 +9,9 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import conexion.Conexion;
+import empaquetamiento.Evento;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /**
  * ServidorPeer.class
@@ -59,7 +61,7 @@ public class ServidorPeer implements Runnable {
 class ServidorPeerHilo extends Thread {
 
     private Socket socket;
-    private BufferedReader lector;
+    private ObjectInputStream lector;
     private Conexion suscriptor;
 
     public ServidorPeerHilo(Socket socket, Conexion suscriptor) {
@@ -71,8 +73,8 @@ class ServidorPeerHilo extends Thread {
     public void run() {
         try {
             while (true) {
-                lector = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-                String datosRecibidos = lector.readLine();
+                lector = new ObjectInputStream(this.socket.getInputStream());
+                Evento datosRecibidos = (Evento)lector.readObject();
                 this.suscriptor.recibirDatos(datosRecibidos);
             }
         } catch (IOException e) {

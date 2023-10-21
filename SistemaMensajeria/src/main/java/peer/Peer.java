@@ -5,6 +5,7 @@
 package peer;
 
 import conexion.Conexion;
+import empaquetamiento.Evento;
 import excepciones.ConexionException;
 
 /**
@@ -38,7 +39,7 @@ public class Peer {
         this.ladoCliente.cerrarConexionServidorIndices();
     }
 
-    public void enviarDatos(String datos) throws ConexionException {
+    public void enviarDatos(Evento datos) throws ConexionException {
          this.ladoCliente.enviarDatos(datos);
     }
 

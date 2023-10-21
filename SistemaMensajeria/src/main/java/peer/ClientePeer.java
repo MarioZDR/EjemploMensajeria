@@ -4,6 +4,7 @@
  */
 package peer;
 
+import empaquetamiento.Evento;
 import excepciones.ConexionException;
 import java.io.*;
 import java.net.*;
@@ -11,9 +12,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ClientePeer.class
+ *
  * @author
  */
 public class ClientePeer implements Runnable {
@@ -49,19 +53,20 @@ public class ClientePeer implements Runnable {
         salidaServidorIndices.println(this.host + ":" + this.puerto);
     }
 
-    public void enviarDatosBroadcast(String datos) throws ConexionException {
+    public void enviarDatosBroadcast(Evento datos) throws ConexionException {
         for (Socket peer : peersCercanos.values()) {
-            PrintWriter writer;
+            ObjectOutputStream writer;
             try {
-                writer = new PrintWriter(peer.getOutputStream(), true);
-                writer.println(datos);
+                writer = new ObjectOutputStream(peer.getOutputStream());
+                writer.writeObject(datos);
             } catch (IOException ex) {
+                 ex.printStackTrace();
                 throw new ConexionException("No se pudo enviar el mensaje");
             }
         }
     }
 
-    public void enviarDatos(String datos) throws ConexionException {
+    public void enviarDatos(Evento datos) throws ConexionException {
         try {
             List<String> direcciones = this.obtenerPeers();
             this.conectarPeers(direcciones);
@@ -71,7 +76,7 @@ public class ClientePeer implements Runnable {
         }
     }
 
-    public List<String> obtenerPeers(){
+    public List<String> obtenerPeers() {
         try {
             if (!socketServidorIndices.isClosed()) {
                 salidaServidorIndices.println("CONSULTAR");

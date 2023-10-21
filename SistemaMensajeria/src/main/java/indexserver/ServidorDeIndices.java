@@ -11,12 +11,12 @@ import java.util.*;
 public class ServidorDeIndices {
 
     private static List<String> peersRegistrados = new ArrayList<>();
-    public static int PORT_SERVIDOR_INDICES = 3999;
+    public static int PUERTO_SERVIDOR_INDICES = 3999;
 
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(PORT_SERVIDOR_INDICES);
-            System.out.println("Index Server ejecutandose en " + PORT_SERVIDOR_INDICES);
+            ServerSocket serverSocket = new ServerSocket(PUERTO_SERVIDOR_INDICES);
+            System.out.println("Index Server ejecutandose en " + PUERTO_SERVIDOR_INDICES);
 
             while (true) {
                 Socket socket = serverSocket.accept();
